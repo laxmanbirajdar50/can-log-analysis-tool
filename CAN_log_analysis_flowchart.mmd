@@ -1,0 +1,38 @@
+flowchart TD
+    A([Start]) --> B[Locate pract.txt and set report path]
+    B --> C{Does pract.txt exist?}
+    C -- No --> D[Print error]
+    D --> Z([Exit])
+    C -- Yes --> E[Compile CAN log pattern]
+    E --> F[Initialize messages grouped by CAN ID]
+    F --> G[Read log line]
+    G --> H{More lines?}
+    H -- Yes --> I{Line matches pattern?}
+    I -- No --> G
+    I -- Yes --> J[Parse timestamp, CAN ID, DLC, and data bytes]
+    J --> K{Data bytes valid hex?}
+    K -- No --> G
+    K -- Yes --> L[Add frame to messages for its CAN ID]
+    L --> G
+    H -- No --> M[Create report and write totals]
+    M --> N[Write sorted CAN ID summary]
+    N --> O{More CAN IDs?}
+    O -- Yes --> P[Write ID heading and occurrence count]
+    P --> Q[Calculate and write DLC distribution]
+    Q --> R{More than one frame?}
+    R -- Yes --> S[Calculate and write cycle-time statistics]
+    R -- No --> T[Analyze bytes]
+    S --> T
+    T --> U[For each byte position, collect values]
+    U --> V{Only one unique value?}
+    V -- Yes --> W[Write constant value]
+    V -- No --> X[Write min, max, unique count, and counter score]
+    X --> Y{Counter score over 80%?}
+    Y -- Yes --> AA[Write possible rolling counter]
+    Y -- No --> AB[Write up to five sample frames]
+    W --> AB
+    AA --> AB
+    AB --> O
+    O -- No --> AC[Close report]
+    AC --> AD[Print completion and report path]
+    AD --> Z
